@@ -8,7 +8,7 @@ uk.gov.justice.digital.hmpps.digitalprisonreportinglib.config.DprOpenApiConfigur
 uk.gov.justice.digital.hmpps.digitalprisonreportinglib.config.DefinitionGsonConfig
 uk.gov.justice.digital.hmpps.digitalprisonreportinglib.config.AwsProperties
 uk.gov.justice.digital.hmpps.digitalprisonreportinglib.config.AwsConfig
-uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.DatasetHelper
+uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.IdentifiedHelper
 uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.establishmentsAndWings.EstablishmentsToWingsRepository
 uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.ProductDefinitionRepositoryAutoConfig
 uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.RedShiftSummaryTableHelper

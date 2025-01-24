@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.F
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.FilterOption
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.LabelDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.MetricDefinition
-import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.DatasetHelper
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.IdentifiedHelper
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Chart
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Column
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Dashboard
@@ -21,10 +21,10 @@ import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.SchemaF
 @Component
 class DashboardDefinitionMapper(
   syncDataApiService: SyncDataApiService,
-  datasetHelper: DatasetHelper,
-) : DefinitionMapper(syncDataApiService, datasetHelper) {
+  identifiedHelper: IdentifiedHelper,
+) : DefinitionMapper(syncDataApiService, identifiedHelper) {
   fun toDashboardDefinition(dashboard: Dashboard, allDatasets: List<Dataset>): DashboardDefinition {
-    val dataset = datasetHelper.findDataset(allDatasets, dashboard.dataset)
+    val dataset = identifiedHelper.findOrFail(allDatasets, dashboard.dataset)
 
     return DashboardDefinition(
       id = dashboard.id,

@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.DataApi
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.Count
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.ConfiguredApiRepository
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.ConfiguredApiRepository.Filter
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.IdentifiedHelper
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.IsoLocalDateTimeTypeAdaptor
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.JsonFileProductDefinitionRepository
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.ProductDefinitionRepository
@@ -52,10 +53,6 @@ import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.security.DprAuthAw
 import java.time.LocalDateTime
 
 class SyncDataApiServiceTest {
-  private val productDefinitionRepository: ProductDefinitionRepository = JsonFileProductDefinitionRepository(
-    listOf("productDefinition.json"),
-    DefinitionGsonConfig().definitionGson(IsoLocalDateTimeTypeAdaptor()),
-  )
   private val configuredApiRepository: ConfiguredApiRepository = mock<ConfiguredApiRepository>()
   private val expectedRepositoryResult = listOf(
     mapOf(
@@ -86,7 +83,13 @@ class SyncDataApiServiceTest {
   private val reportVariantId = "last-month"
   private val policyEngineResult = "TRUE AND (origin_code='WWI' AND lower(direction)='out') OR (destination_code='WWI' AND lower(direction)='in')"
   private val productDefinitionTokenPolicyChecker = mock<ProductDefinitionTokenPolicyChecker>()
-  private val configuredApiService = SyncDataApiService(productDefinitionRepository, configuredApiRepository, productDefinitionTokenPolicyChecker)
+  private val identifiedHelper: IdentifiedHelper = IdentifiedHelper()
+  private val productDefinitionRepository: ProductDefinitionRepository = JsonFileProductDefinitionRepository(
+    listOf("productDefinition.json"),
+    DefinitionGsonConfig().definitionGson(IsoLocalDateTimeTypeAdaptor()),
+    identifiedHelper,
+  )
+  private val configuredApiService = SyncDataApiService(productDefinitionRepository, configuredApiRepository, productDefinitionTokenPolicyChecker, identifiedHelper)
 
   @BeforeEach
   fun setup() {
@@ -521,8 +524,9 @@ class SyncDataApiServiceTest {
     val productDefinitionRepository: ProductDefinitionRepository = JsonFileProductDefinitionRepository(
       listOf("productDefinitionPolicyNoAction.json"),
       DefinitionGsonConfig().definitionGson(IsoLocalDateTimeTypeAdaptor()),
+      identifiedHelper,
     )
-    val configuredApiService = SyncDataApiService(productDefinitionRepository, configuredApiRepository, productDefinitionTokenPolicyChecker)
+    val configuredApiService = SyncDataApiService(productDefinitionRepository, configuredApiRepository, productDefinitionTokenPolicyChecker, identifiedHelper)
     whenever(authToken.authorities).thenReturn(listOf(SimpleGrantedAuthority("USER-ROLE-1")))
     val policyEngineResult = "TRUE"
     val reportId = "definition-policy-no-action"
@@ -731,7 +735,7 @@ class SyncDataApiServiceTest {
     val sortColumn = "date"
     val sortedAsc = true
 
-    val e = org.junit.jupiter.api.assertThrows<ValidationException> {
+    val e = org.junit.jupiter.api.assertThrows<java.lang.IllegalArgumentException> {
       configuredApiService.validateAndFetchData(reportId, reportVariantId, filters, selectedPage, pageSize, sortColumn, sortedAsc, authToken)
     }
     assertEquals("${SyncDataApiService.INVALID_REPORT_VARIANT_ID_MESSAGE} $reportVariantId", e.message)
@@ -754,7 +758,7 @@ class SyncDataApiServiceTest {
     val reportVariantId = "non existent variant"
     val filters = mapOf("direction" to "in", "date$RANGE_FILTER_START_SUFFIX" to "2023-04-25", "date$RANGE_FILTER_END_SUFFIX" to "2023-09-10")
 
-    val e = org.junit.jupiter.api.assertThrows<ValidationException> {
+    val e = org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
       configuredApiService.validateAndCount(reportId, reportVariantId, filters, authToken)
     }
     assertEquals("${SyncDataApiService.INVALID_REPORT_VARIANT_ID_MESSAGE} $reportVariantId", e.message)
@@ -1254,7 +1258,7 @@ class SyncDataApiServiceTest {
       mapOf("9" to "1"),
     )
     val productDefRepo = mock<ProductDefinitionRepository>()
-    val configuredApiService = SyncDataApiService(productDefRepo, configuredApiRepository, productDefinitionTokenPolicyChecker)
+    val configuredApiService = SyncDataApiService(productDefRepo, configuredApiRepository, productDefinitionTokenPolicyChecker, identifiedHelper)
     val dataSourceName = "name"
 
     whenever(productDefRepo.getProductDefinitions())
@@ -1273,6 +1277,7 @@ class SyncDataApiServiceTest {
       report = report,
       datasource = Datasource("id", dataSourceName),
       allDatasets = listOf(dataSet),
+      allReports = emptyList(),
     )
     whenever(productDefRepo.getSingleReportProductDefinition(reportId, reportVariantId))
       .thenReturn(

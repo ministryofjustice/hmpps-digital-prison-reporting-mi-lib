@@ -10,4 +10,5 @@ data class VariantDefinition(
   val printable: Boolean? = true,
   val summaries: List<ReportSummary>? = emptyList(),
   val interactive: Boolean? = null,
+  val childVariants: List<ChildVariantDefinition>? = null,
 )

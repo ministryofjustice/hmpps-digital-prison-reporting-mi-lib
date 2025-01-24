@@ -17,4 +17,7 @@ enum class Template {
 
   @SerializedName("summary-section")
   SectionedSummary,
+
+  @SerializedName("parent-child")
+  ParentChild,
 }

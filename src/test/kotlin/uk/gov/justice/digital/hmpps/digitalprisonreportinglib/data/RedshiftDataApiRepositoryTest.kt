@@ -79,7 +79,7 @@ class RedshiftDataApiRepositoryTest {
   private val dataset = mock<Dataset>()
   private val executeStatementResponse = mock<ExecuteStatementResponse>()
   private val report = mock<Report>()
-  private val datasetHelper = DatasetHelper()
+  private val identifiedHelper = IdentifiedHelper()
   private val redShiftSummaryTableHelper = mock<RedShiftSummaryTableHelper>()
 
   @BeforeEach
@@ -97,7 +97,7 @@ class RedshiftDataApiRepositoryTest {
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -153,7 +153,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -212,7 +212,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -247,7 +247,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -291,7 +291,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -346,7 +346,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -397,7 +397,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -436,7 +436,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -474,7 +474,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -513,7 +513,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -539,7 +539,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       mock(),
       mock(),
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -570,7 +570,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       mock(),
       mock(),
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -600,7 +600,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,
@@ -623,7 +623,7 @@ SELECT *
     val redshiftDataApiRepository = RedshiftDataApiRepository(
       redshiftDataClient,
       tableIdGenerator,
-      datasetHelper,
+      identifiedHelper,
       redShiftSummaryTableHelper,
       REDSHIFT_DATA_API_DB,
       REDSHIFT_DATA_API_CLUSTER_ID,

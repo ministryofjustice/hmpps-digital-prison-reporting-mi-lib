@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.M
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.AthenaAndRedshiftCommonRepository
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.AthenaApiRepository
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.ConfiguredApiRepository
-import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.DatasetHelper
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.IdentifiedHelper
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.ProductDefinitionRepository
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.QUERY_FINISHED
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.RedshiftDataApiRepository
@@ -33,10 +33,10 @@ class AsyncDataApiService(
   val redshiftDataApiRepository: RedshiftDataApiRepository,
   val athenaApiRepository: AthenaApiRepository,
   val tableIdGenerator: TableIdGenerator,
-  val datasetHelper: DatasetHelper,
+  identifiedHelper: IdentifiedHelper,
   val productDefinitionTokenPolicyChecker: ProductDefinitionTokenPolicyChecker,
   @Value("\${URL_ENV_SUFFIX:#{null}}") val env: String? = null,
-) : CommonDataApiService() {
+) : CommonDataApiService(identifiedHelper) {
 
   companion object {
     const val INVALID_FILTERS_MESSAGE = "Invalid filters provided."
@@ -45,7 +45,6 @@ class AsyncDataApiService(
     const val INVALID_DYNAMIC_FILTER_MESSAGE = "Error. This filter is not a dynamic filter."
     const val MISSING_MANDATORY_FILTER_MESSAGE = "Mandatory filter value not provided:"
     const val FILTER_VALUE_DOES_NOT_MATCH_PATTERN_MESSAGE = "Filter value does not match pattern:"
-    const val SCHEMA_REF_PREFIX = "\$ref:"
   }
 
   private val datasourceNameToRepo: Map<String, AthenaAndRedshiftCommonRepository>
@@ -146,7 +145,7 @@ class AsyncDataApiService(
   ): List<Map<String, Any?>> {
     val productDefinition = productDefinitionRepository.getSingleReportProductDefinition(reportId, reportVariantId, dataProductDefinitionsPath)
     checkAuth(productDefinition, userToken)
-    val formulaEngine = FormulaEngine(productDefinition.report.specification?.field ?: emptyList(), env)
+    val formulaEngine = FormulaEngine(productDefinition.report.specification?.field ?: emptyList(), env, identifiedHelper)
     return formatColumnsAndApplyFormulas(
       redshiftDataApiRepository.getPaginatedExternalTableResult(
         tableId,
@@ -207,7 +206,7 @@ class AsyncDataApiService(
     val summary = productDefinition.report.summary?.find { it.id == summaryId }
       ?: throw ValidationException("Invalid summary ID: $summaryId")
 
-    val dataset = datasetHelper.findDataset(productDefinition.allDatasets, summary.dataset)
+    val dataset = identifiedHelper.findOrFail(productDefinition.allDatasets, summary.dataset)
     val tableSummaryId = tableIdGenerator.getTableSummaryId(tableId, summaryId)
 
     // Request data from the summary table.

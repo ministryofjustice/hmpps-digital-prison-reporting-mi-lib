@@ -3,19 +3,22 @@ package uk.gov.justice.digital.hmpps.digitalprisonreportinglib.service
 import jakarta.validation.ValidationException
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.DataApiSyncController
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.ConfiguredApiRepository
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.IdentifiedHelper
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.RepositoryHelper
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Dataset
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.FilterDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.FilterType
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Identified.Companion.REF_PREFIX
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.ParameterType
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.ReportField
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Schema
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.SchemaField
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.SingleDashboardProductDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.SingleReportProductDefinition
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
-abstract class CommonDataApiService {
+abstract class CommonDataApiService(val identifiedHelper: IdentifiedHelper) {
   protected fun formatColumnNamesToSourceFieldNamesCasing(
     row: Map<String, Any?>,
     fieldNames: List<String>,
@@ -36,7 +39,7 @@ abstract class CommonDataApiService {
       ?.field
       ?.firstOrNull { it.defaultSort }
       ?.name
-      ?.removePrefix(AsyncDataApiService.SCHEMA_REF_PREFIX)
+      ?.removePrefix(REF_PREFIX)
   }
 
   protected fun sortColumnFromQueryOrGetDefault(productDefinition: SingleReportProductDefinition, sortColumn: String?): String? {
@@ -57,7 +60,7 @@ abstract class CommonDataApiService {
   private fun checkCorrectFiltersAreProvided(definition: SingleReportProductDefinition, filters: Map<String, String>, interactive: Boolean?) {
     val fieldFilters = definition.report.specification!!.field
       .map {
-        val name = it.name.removePrefix(AsyncDataApiService.SCHEMA_REF_PREFIX)
+        val name = it.name.removePrefix(REF_PREFIX)
         name to findFilterDefinitionFromFieldsAndDataset(definition.report.specification.field, definition.reportDataset, name)
       }
       .toMap()
@@ -68,7 +71,7 @@ abstract class CommonDataApiService {
 
   private fun checkCorrectFiltersAreProvided(definition: SingleDashboardProductDefinition, filters: Map<String, String>, interactive: Boolean) {
     val fieldFilters = definition.dashboardDataset.schema.field
-      .map { it.name.removePrefix(AsyncDataApiService.SCHEMA_REF_PREFIX) to findFilterDefinitionFromFieldsAndDataset(null, definition.dashboardDataset, it.name) }
+      .map { it.name.removePrefix(REF_PREFIX) to findFilterDefinitionFromFieldsAndDataset(null, definition.dashboardDataset, it.name) }
       .toMap()
 
     checkMandatoryFiltersAreProvided(fieldFilters, interactive, filters)
@@ -205,18 +208,15 @@ abstract class CommonDataApiService {
   }
 
   fun findFilterDefinitionFromFieldsAndDataset(fields: List<ReportField>?, dataset: Dataset, filterName: String): FilterDefinition? {
-    val fieldFilter = fields?.firstOrNull { it.filter != null && filterName == it.name.removePrefix(AsyncDataApiService.SCHEMA_REF_PREFIX) }?.filter
+    val fieldFilter = identifiedHelper.findOrNull(fields, filterName)?.filter
 
     val datasetFilter = findFilterDefinitionFromDataset(dataset, filterName)
 
     return fieldFilter ?: datasetFilter
   }
 
-  private fun findFilterDefinitionFromDataset(dataset: Dataset, filterName: String): FilterDefinition? {
-    val datasetFilter = dataset.schema.field.firstOrNull { it.filter != null && filterName == it.name }?.filter
-
-    return datasetFilter
-  }
+  private fun findFilterDefinitionFromDataset(dataset: Dataset, filterName: String): FilterDefinition? =
+    identifiedHelper.findOrNull<SchemaField>(dataset.schema.field, filterName)?.filter
 
   protected fun validateValue(dataSet: Dataset, filterDefinition: FilterDefinition, filterName: String, filterValue: String, reportFieldId: Set<String>?) {
     validateFilterSchemaFieldType(dataSet, filterName, filterValue)

@@ -13,4 +13,6 @@ data class ReportField(
   // Formula and visible are not used yet. This is pending ticket https://dsdmoj.atlassian.net/browse/DPR2-241
   val formula: String? = null,
   val visible: Visible? = null,
-)
+) : Identified() {
+  override fun getIdentifier() = this.name
+}

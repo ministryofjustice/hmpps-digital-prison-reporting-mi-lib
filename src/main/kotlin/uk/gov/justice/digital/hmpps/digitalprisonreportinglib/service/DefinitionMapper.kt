@@ -7,19 +7,18 @@ import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.F
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.FilterType
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.GranularityDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.QuickFilterDefinition
-import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.DatasetHelper
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.IdentifiedHelper
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Dataset
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.ParameterType
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.StaticFilterOption
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.security.DprAuthAwareAuthenticationToken
-import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.service.SyncDataApiService.Companion.SCHEMA_REF_PREFIX
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import java.time.temporal.ChronoUnit
 
 abstract class DefinitionMapper(
   private val syncDataApiService: SyncDataApiService,
-  val datasetHelper: DatasetHelper,
+  val identifiedHelper: IdentifiedHelper,
 ) {
 
   companion object {
@@ -125,16 +124,10 @@ abstract class DefinitionMapper(
     dynamicFilterDatasetId: String,
     maxStaticOptions: Long?,
   ): List<FilterOption> {
-    val schemaFieldRefForName = dynamicFilterOption.name?.removePrefix(SCHEMA_REF_PREFIX)
-    val schemaFieldRefForDisplay = dynamicFilterOption.display?.removePrefix(SCHEMA_REF_PREFIX)
-    val matchingFilterDataset = datasetHelper.findDataset(allDatasets, dynamicFilterDatasetId)
+    val matchingFilterDataset = identifiedHelper.findOrFail(allDatasets, dynamicFilterDatasetId)
     val matchingSchemaFieldsForFilterDataset = matchingFilterDataset.schema.field
-    val nameSchemaField =
-      matchingSchemaFieldsForFilterDataset.find { it.name == schemaFieldRefForName } ?: throw IllegalArgumentException(
-        "Could not find matching Schema Field '$schemaFieldRefForName'",
-      )
-    val displaySchemaField = matchingSchemaFieldsForFilterDataset.find { it.name == schemaFieldRefForDisplay }
-      ?: throw IllegalArgumentException("Could not find matching Schema Field '$schemaFieldRefForDisplay'")
+    val nameSchemaField = identifiedHelper.findOrFail(matchingSchemaFieldsForFilterDataset, dynamicFilterOption.name)
+    val displaySchemaField = identifiedHelper.findOrFail(matchingSchemaFieldsForFilterDataset, dynamicFilterOption.display)
     return syncDataApiService.validateAndFetchDataForFilterWithDataset(
       pageSize = maxStaticOptions ?: DEFAULT_MAX_STATIC_OPTIONS,
       sortColumn = nameSchemaField.name,

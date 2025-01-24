@@ -1,0 +1,238 @@
+{
+  "id" : "external-movements",
+  "name" : "External Movements",
+  "description" : "Reports about prisoner external movements",
+  "metadata" : {
+    "author" : "Adam",
+    "version" : "1.2.3",
+    "owner" : "Eve"
+  },
+  "datasource" : [
+    {
+      "id": "datamart",
+      "name": "datamart"
+    }],
+  "dataset" : [ {
+    "id" : "external-movements",
+    "name" : "All movements",
+    "query" : "SELECT prisoners.number AS prisonNumber,CONCAT(CONCAT(prisoners.lastname, ', '), substring(prisoners.firstname, 1, 1)) AS name,movements.time AS date,movements.direction,movements.type,movements.origin,movements.origin_code,movements.destination,movements.destination_code,movements.reason\nFROM datamart.domain.movement_movement as movements\nJOIN datamart.domain.prisoner_prisoner as prisoners\nON movements.prisoner = prisoners.id",
+    "schema" : {
+      "field" : [ {
+        "name" : "prisonNumber",
+        "type" : "string",
+        "display" : "Prison Number"
+      }, {
+        "name" : "name",
+        "type" : "string",
+        "display" : "Name"
+      }, {
+        "name" : "date",
+        "type" : "date",
+        "display" : ""
+      }, {
+        "name" : "origin",
+        "type" : "string",
+        "display" : ""
+      }, {
+        "name" : "origin_code",
+        "type" : "string",
+        "display" : ""
+      }, {
+        "name" : "destination",
+        "type" : "string",
+        "display" : ""
+      },{
+        "name" : "destination_code",
+        "type" : "string",
+        "display" : ""
+      }, {
+        "name" : "direction",
+        "type" : "string",
+        "display" : ""
+      }, {
+        "name" : "type",
+        "type" : "string",
+        "display" : ""
+      }, {
+        "name" : "reason",
+        "type" : "string",
+        "display" : ""
+      }, {
+        "name" : "is_closed",
+        "type" : "boolean",
+        "display" : ""
+      }]
+    }
+  },
+    {
+      "id": "prisoner-dataset",
+      "name": "prisoner dataset",
+      "datasource": "datamart",
+      "query": "SELECT prisoners.number AS prisonNumber, CONCAT(CONCAT(prisoners.lastname, ', '), substring(prisoners.firstname, 1, 1)) AS name FROM datamart.domain.prisoner_prisoner as prisoners",
+      "schema": {
+        "field": [
+          {
+            "name": "prisonNumber",
+            "type": "string",
+            "display": "Prisoner Number"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "display": "Prisoner Name"
+          }]
+      }
+    }
+  ],
+  "policy": [
+    {
+      "id": "role-based-policy",
+      "type": "access",
+      "rule": [
+        {
+          "effect": "permit",
+          "condition": []
+        }
+      ]
+    },
+    {
+      "id": "caseload",
+      "type": "row-level",
+      "action": ["(origin_code='${caseload}' AND lower(direction)='out') OR (destination_code='${caseload}' AND lower(direction)='in')"],
+      "rule": [
+        {
+          "effect": "permit",
+          "condition": [
+            {
+              "exists": ["${caseload}"]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "report" : [ {
+    "id" : "last-month",
+    "name" : "Last month",
+    "description" : "All movements in the past month",
+    "metadata" : {
+      "hints" : ["interactive"]
+    },
+    "created" : "2023-09-20T14:41:00.000Z",
+    "classification": "report classification",
+    "version" : "1.2.3",
+    "dataset" : "$ref:external-movements",
+    "policy" : [ ],
+    "render" : "HTML-child",
+    "feature": [ {
+      "type": "print"
+    }],
+    "specification" : {
+      "template" : "list",
+      "field" : [ {
+        "name" : "$ref:prisonNumber",
+        "sortable" : true,
+        "defaultsort" : false
+      }, {
+        "name" : "$ref:name",
+        "display" : "Name",
+        "wordWrap" : "none",
+        "sortable" : true,
+        "defaultsort" : false
+      }, {
+        "name" : "$ref:date",
+        "display" : "Date",
+        "sortable" : true,
+        "defaultsort" : true
+      }, {
+        "name" : "$ref:origin",
+        "display" : "From",
+        "filter" : {
+          "type" : "text"
+        },
+        "wordWrap" : "none",
+        "sortable" : true,
+        "defaultsort" : false
+      }, {
+        "name" : "$ref:destination",
+        "display" : "To",
+        "wordWrap" : "none",
+        "sortable" : true,
+        "defaultsort" : false,
+        "visible": "true"
+      }, {
+        "name" : "$ref:direction",
+        "display" : "Direction",
+        "wordWrap" : "break-words",
+        "filter" : {
+          "type" : "Radio",
+          "interactive": true,
+          "staticoptions" : [ {
+            "name" : "in",
+            "display" : "In"
+          }, {
+            "name" : "out",
+            "display" : "Out"
+          } ]
+        },
+        "sortable" : true,
+        "defaultsort" : false
+      }, {
+        "name" : "$ref:type",
+        "display" : "Type",
+        "sortable" : true,
+        "defaultsort" : false,
+        "visible": "false",
+        "wordWrap" : "normal"
+      }, {
+        "name" : "$ref:reason",
+        "display" : "Reason",
+        "sortable" : true,
+        "defaultsort" : false,
+        "visible": "mandatory",
+        "filter" : {
+          "type" : "autocomplete",
+          "dynamicoptions":{
+            "minimumLength": 2,
+            "returnAsStaticOptions": true,
+            "maximumOptions": 1
+          }
+        }
+      }, {
+        "name": "$ref:is_closed",
+        "display": "Closed",
+        "sortable": true
+      } ]
+    },
+    "destination" : [ ]
+  }, {
+      "id" : "prisoner-report",
+      "name" : "Prisoners",
+      "description" : "Prisoners",
+      "classification": "report classification",
+      "version" : "1.2.3",
+      "dataset" : "$ref:prisoner-dataset",
+      "policy" : [ ],
+      "render" : "HTML",
+      "specification" : {
+        "template" : "parent-child",
+        "field" : [ {
+          "name" : "$ref:prisonNumber",
+          "display" : "Prison Number",
+          "sortable" : true,
+          "defaultsort" : true
+        }, {
+          "name" : "$ref:name",
+          "display" : "Name",
+          "wordWrap" : "none",
+          "sortable" : true,
+          "defaultsort" : false
+        } ]
+      },
+      "child": [ {
+        "reportId": "$ref:last-month",
+        "joinField": [ "prisonNumber" ]
+      } ],
+      "destination" : [ ]
+    }]
+}

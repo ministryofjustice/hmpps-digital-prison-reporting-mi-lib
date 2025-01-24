@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.service.model.Prom
 class RedshiftDataApiRepository(
   val redshiftDataClient: RedshiftDataClient,
   private val tableIdGenerator: TableIdGenerator,
-  private val datasetHelper: DatasetHelper,
+  private val identifiedHelper: IdentifiedHelper,
   private val redShiftSummaryTableHelper: RedShiftSummaryTableHelper,
   @Value("\${dpr.lib.redshiftdataapi.database:db}") private val redshiftDataApiDb: String,
   @Value("\${dpr.lib.redshiftdataapi.clusterid:clusterId}") private val redshiftDataApiClusterId: String,
@@ -122,7 +122,7 @@ class RedshiftDataApiRepository(
 
   fun buildSummaryQueries(productDefinition: SingleReportProductDefinition, tableId: String): String {
     return productDefinition.report.summary?.joinToString(" ") {
-      val query = datasetHelper.findDataset(productDefinition.allDatasets, it.dataset).query
+      val query = identifiedHelper.findOrFail(productDefinition.allDatasets, it.dataset).query
 
       redShiftSummaryTableHelper.buildSummaryQuery(
         query,

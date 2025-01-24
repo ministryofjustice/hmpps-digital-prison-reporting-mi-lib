@@ -8,4 +8,5 @@ enum class Template(@JsonValue val template: String) {
   ListTab("list-tab"),
   Summary("summary"),
   SectionedSummary("summary-section"),
+  ParentChild("parent-child"),
 }

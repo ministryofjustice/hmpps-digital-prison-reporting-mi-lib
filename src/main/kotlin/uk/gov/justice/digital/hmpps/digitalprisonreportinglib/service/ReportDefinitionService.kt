@@ -35,7 +35,7 @@ class ReportDefinitionService(
   ): SingleVariantReportDefinition {
     val singleReportDefinitionDefinition = productDefinitionRepository.getSingleReportProductDefinition(reportId, variantId, dataProductDefinitionsPath)
     checkAuth(singleReportDefinitionDefinition, userToken)
-    return mapper.map(
+    return mapper.mapReport(
       definition = singleReportDefinitionDefinition,
       userToken = userToken,
       dataProductDefinitionsPath = dataProductDefinitionsPath,

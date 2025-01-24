@@ -81,6 +81,7 @@ class ReportDefinitionServiceTest {
     ),
     policy = listOf(policy),
     allDatasets = listOf(dataset),
+    allReports = emptyList(),
   )
 
   private val productDefinitionTokenPolicyChecker = mock<ProductDefinitionTokenPolicyChecker>()
@@ -147,7 +148,7 @@ class ReportDefinitionServiceTest {
     whenever(repository.getSingleReportProductDefinition(any(), any(), anyOrNull())).thenReturn(minimalSingleDefinition)
 
     val mapper = mock<ReportDefinitionMapper> {
-      on { map(any<SingleReportProductDefinition>(), any(), anyOrNull()) } doReturn expectedResult
+      on { mapReport(any<SingleReportProductDefinition>(), any(), anyOrNull()) } doReturn expectedResult
     }
     val service = ReportDefinitionService(repository, mapper, mock<ReportDefinitionSummaryMapper> {}, productDefinitionTokenPolicyChecker)
 
@@ -161,7 +162,7 @@ class ReportDefinitionServiceTest {
       minimalSingleDefinition.id,
       minimalSingleDefinition.report.id,
     )
-    then(mapper).should().map(minimalSingleDefinition, authToken)
+    then(mapper).should().mapReport(minimalSingleDefinition, authToken)
 
     assertThat(actualResult).isNotNull
     assertThat(actualResult).isEqualTo(expectedResult)

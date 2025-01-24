@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.Count
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.ConfiguredApiRepository
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.IdentifiedHelper
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.ProductDefinitionRepository
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Dataset
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.SchemaField
@@ -18,19 +19,19 @@ class SyncDataApiService(
   private val productDefinitionRepository: ProductDefinitionRepository,
   private val configuredApiRepository: ConfiguredApiRepository,
   private val productDefinitionTokenPolicyChecker: ProductDefinitionTokenPolicyChecker,
+  identifiedHelper: IdentifiedHelper,
   @Value("\${URL_ENV_SUFFIX:#{null}}") val env: String? = null,
-) : CommonDataApiService() {
+) : CommonDataApiService(identifiedHelper) {
 
   companion object {
     const val INVALID_REPORT_ID_MESSAGE = "Invalid report id provided:"
-    const val INVALID_REPORT_VARIANT_ID_MESSAGE = "Invalid report variant id provided:"
+    const val INVALID_REPORT_VARIANT_ID_MESSAGE = "Invalid Report ID:"
     const val INVALID_FILTERS_MESSAGE = "Invalid filters provided."
     const val INVALID_STATIC_OPTIONS_MESSAGE = "Invalid static options provided."
     const val INVALID_DYNAMIC_OPTIONS_MESSAGE = "Invalid dynamic options length provided."
     const val INVALID_DYNAMIC_FILTER_MESSAGE = "Error. This filter is not a dynamic filter."
     const val MISSING_MANDATORY_FILTER_MESSAGE = "Mandatory filter value not provided:"
     const val FILTER_VALUE_DOES_NOT_MATCH_PATTERN_MESSAGE = "Filter value does not match pattern:"
-    const val SCHEMA_REF_PREFIX = "\$ref:"
   }
 
   fun validateAndFetchData(
@@ -52,7 +53,7 @@ class SyncDataApiService(
     checkAuth(productDefinition, userToken)
     val dynamicFilter = buildAndValidateDynamicFilter(reportFieldId?.first(), prefix, productDefinition)
     val policyEngine = PolicyEngine(productDefinition.policy, userToken)
-    val formulaEngine = FormulaEngine(productDefinition.report.specification?.field ?: emptyList(), env)
+    val formulaEngine = FormulaEngine(productDefinition.report.specification?.field ?: emptyList(), env, identifiedHelper)
     return configuredApiRepository
       .executeQuery(
         query = datasetForFilter?.query ?: productDefinition.reportDataset.query,
@@ -81,7 +82,7 @@ class SyncDataApiService(
     sortColumn: String,
     dataset: Dataset,
   ): List<Map<String, Any?>> {
-    val formulaEngine = FormulaEngine(emptyList(), env)
+    val formulaEngine = FormulaEngine(emptyList(), env, identifiedHelper)
     return configuredApiRepository
       .executeQuery(
         query = dataset.query,

@@ -18,4 +18,7 @@ data class Report(
   val summary: List<ReportSummary>? = emptyList(),
   val filter: ReportFilter? = null,
   val metadata: ReportMetadata? = null,
-)
+  val child: List<ReportChild>? = null,
+) : Identified() {
+  override fun getIdentifier() = this.id
+}

@@ -31,9 +31,11 @@ class ProductDefinitionRepositoryAutoConfig(
   fun productDefinitionRepository(
     localDateTimeTypeAdaptor: LocalDateTimeTypeAdaptor,
     dprDefinitionGson: Gson,
+    identifiedHelper: IdentifiedHelper,
   ): ProductDefinitionRepository = JsonFileProductDefinitionRepository(
     definitionResourceLocations ?: emptyList(),
     dprDefinitionGson,
+    identifiedHelper,
   )
 
   @Bean
@@ -46,6 +48,7 @@ class ProductDefinitionRepositoryAutoConfig(
     dprDefinitionGson: Gson,
     definitionsCache: Cache<String, List<ProductDefinition>>? = null,
     authenticationHelper: AuthenticationHelper,
+    identifiedHelper: IdentifiedHelper,
   ): ProductDefinitionRepository = ClientDataProductDefinitionsRepository(
     RestTemplate(
       listOf(GsonHttpMessageConverter(dprDefinitionGson)),
@@ -53,6 +56,7 @@ class ProductDefinitionRepositoryAutoConfig(
     definitionsHost,
     definitionsCache,
     authenticationHelper,
+    identifiedHelper,
   )
 
   @Bean
@@ -63,11 +67,13 @@ class ProductDefinitionRepositoryAutoConfig(
     dynamoDbClient: DynamoDbClient,
     properties: AwsProperties,
     definitionsCache: Cache<String, List<ProductDefinition>>?,
+    identifiedHelper: IdentifiedHelper,
   ): ProductDefinitionRepository = DynamoDbProductDefinitionRepository(
     dynamoDbClient = dynamoDbClient,
     gson = dprDefinitionGson,
     properties = properties,
     definitionsCache = definitionsCache,
+    identifiedHelper = identifiedHelper,
   )
 
   @Bean
