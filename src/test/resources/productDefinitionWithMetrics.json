@@ -83,6 +83,20 @@
           "name": "Missing Ethnicity By Establishment Metric",
           "display": "Missing Ethnicity By Establishment Metric",
           "description": "Missing Ethnicity By Establishment Metric",
+          "columns": [
+            {
+              "name": "$ref:has_ethnicity",
+              "display": "No. of Prisoners with ethnicity",
+              "unit": "number" ,
+              "aggregate": "sum"
+            },
+            {
+              "name": "$ref:ethnicity_is_missing",
+              "display": "No. of Prisoners without ethnicity",
+              "unit": "number",
+              "aggregate": "sum"
+            }
+          ],
           "charts": [
             {
               "type": "bar",
@@ -90,17 +104,7 @@
                 "name": "$ref:establishment_id",
                 "display": "Establishment ID"
               },
-              "unit": "number",
-              "columns": [
-                {
-                  "name": "$ref:has_ethnicity",
-                  "display": "No. of Prisoners with ethnicity"
-                },
-                {
-                  "name": "$ref:ethnicity_is_missing",
-                  "display": "No. of Prisoners without ethnicity"
-                }
-              ]
+              "columns": ["has_ethnicity","ethnicity_is_missing"]
             },
             {
               "type": "doughnut",
@@ -108,17 +112,7 @@
                 "name": "$ref:establishment_id",
                 "display": "Establishment ID"
               },
-              "unit": "percentage",
-              "columns": [
-                {
-                  "name": "$ref:has_ethnicity",
-                  "display": "No. of Prisoners with ethnicity"
-                },
-                {
-                  "name": "$ref:ethnicity_is_missing",
-                  "display": "No. of Prisoners without ethnicity"
-                }
-              ]
+              "columns": ["has_ethnicity","ethnicity_is_missing"]
             }
           ]
         }

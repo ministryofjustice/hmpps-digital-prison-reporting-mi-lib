@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.digitalprisonreportinglib.service
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.ChartDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.ChartTypeDefinition
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.ColumnAggregateTypeDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.ColumnDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.DashboardDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.FieldDefinition
@@ -44,6 +45,7 @@ class DashboardDefinitionMapper(
       display = metric.display,
       description = metric.description,
       charts = metric.charts.map { toChartDefinition(it) },
+      columns = metric.columns.map { toColumnDefinition(it) },
     )
   }
 
@@ -51,13 +53,12 @@ class DashboardDefinitionMapper(
     return ChartDefinition(
       type = ChartTypeDefinition.valueOf(chart.type.toString()),
       label = toLabelDefinition(chart.label),
-      unit = chart.unit,
-      columns = chart.columns.map { toColumnDefinition(it) },
+      columns = chart.columns,
     )
   }
 
   private fun toColumnDefinition(it: Column) =
-    ColumnDefinition(it.name.removePrefix("\$ref:"), it.display)
+    ColumnDefinition(it.name.removePrefix("\$ref:"), it.display, it.unit, ColumnAggregateTypeDefinition.valueOf(it.aggregate.toString()))
 
   private fun toLabelDefinition(label: Label) =
     LabelDefinition(label.name.removePrefix("\$ref:"), label.display)

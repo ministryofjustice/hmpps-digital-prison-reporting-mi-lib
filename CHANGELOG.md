@@ -1,5 +1,8 @@
 Below you can find the changes included in each release.
 
+# 7.5.1
+Changed dashboard json structure.
+
 # 7.5.0
 Add Parent-Child template: https://github.com/ministryofjustice/hmpps-digital-prison-reporting-data-product-definitions-schema?tab=readme-ov-file#parent-child-template
 

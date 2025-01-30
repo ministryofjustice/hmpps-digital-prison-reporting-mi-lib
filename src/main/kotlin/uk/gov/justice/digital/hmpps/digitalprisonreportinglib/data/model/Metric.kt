@@ -6,13 +6,13 @@ data class Metric(
   val display: String,
   val description: String,
   val charts: List<Chart>,
+  val columns: List<Column>,
 )
 
 data class Chart(
   val type: ChartType,
   val label: Label,
-  val unit: String,
-  val columns: List<Column>,
+  val columns: List<String>,
 )
 
 data class Label(
@@ -23,4 +23,6 @@ data class Label(
 data class Column(
   val name: String,
   val display: String,
+  val unit: String,
+  val aggregate: ColumnAggregateType? = null,
 )

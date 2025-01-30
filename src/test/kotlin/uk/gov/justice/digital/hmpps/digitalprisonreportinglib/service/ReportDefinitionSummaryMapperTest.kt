@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.R
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Chart
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.ChartType
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Column
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.ColumnAggregateType
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Dashboard
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Dataset
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.data.model.Datasource
@@ -216,12 +217,12 @@ class ReportDefinitionSummaryMapperTest {
           name = "n1",
           display = "d1",
           description = "d2",
+          columns = listOf(Column(name = "column1", display = "Column 1", unit = "dim_1", aggregate = ColumnAggregateType.SUM)),
           charts = listOf(
             Chart(
               type = ChartType.BAR,
-              unit = "dim_1",
               label = Label(name = "label1", display = "Label 1"),
-              columns = listOf(Column(name = "column1", display = "Column 1")),
+              columns = listOf("column1", "Column 1"),
             ),
           ),
         ),

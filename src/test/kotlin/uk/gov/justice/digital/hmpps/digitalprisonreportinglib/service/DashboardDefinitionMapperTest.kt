@@ -10,6 +10,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.config.DefinitionGsonConfig
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.ChartDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.ChartTypeDefinition
+import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.ColumnAggregateTypeDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.ColumnDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.DashboardDefinition
 import uk.gov.justice.digital.hmpps.digitalprisonreportinglib.controller.model.DynamicFilterOption
@@ -62,23 +63,25 @@ class DashboardDefinitionMapperTest {
             name = "Missing Ethnicity By Establishment Metric",
             display = "Missing Ethnicity By Establishment Metric",
             description = "Missing Ethnicity By Establishment Metric",
+            columns = listOf(
+              ColumnDefinition(name = "has_ethnicity", display = "No. of Prisoners with ethnicity", unit = "number", aggregate = ColumnAggregateTypeDefinition.SUM),
+              ColumnDefinition(name = "ethnicity_is_missing", display = "No. of Prisoners without ethnicity", unit = "number", aggregate = ColumnAggregateTypeDefinition.SUM),
+            ),
             charts = listOf(
               ChartDefinition(
                 type = ChartTypeDefinition.BAR,
                 label = LabelDefinition(name = "establishment_id", display = "Establishment ID"),
-                unit = "number",
                 columns = listOf(
-                  ColumnDefinition(name = "has_ethnicity", display = "No. of Prisoners with ethnicity"),
-                  ColumnDefinition(name = "ethnicity_is_missing", display = "No. of Prisoners without ethnicity"),
+                  "has_ethnicity",
+                  "ethnicity_is_missing",
                 ),
               ),
               ChartDefinition(
                 type = ChartTypeDefinition.DOUGHNUT,
                 label = LabelDefinition(name = "establishment_id", display = "Establishment ID"),
-                unit = "percentage",
                 columns = listOf(
-                  ColumnDefinition(name = "has_ethnicity", display = "No. of Prisoners with ethnicity"),
-                  ColumnDefinition(name = "ethnicity_is_missing", display = "No. of Prisoners without ethnicity"),
+                  "has_ethnicity",
+                  "ethnicity_is_missing",
                 ),
               ),
             ),

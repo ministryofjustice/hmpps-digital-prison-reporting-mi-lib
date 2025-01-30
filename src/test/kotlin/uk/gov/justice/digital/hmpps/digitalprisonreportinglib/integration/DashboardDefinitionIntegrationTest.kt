@@ -39,6 +39,20 @@ class DashboardDefinitionIntegrationTest : IntegrationTestBase() {
                 "name": "Missing Ethnicity By Establishment Metric",
                 "display": "Missing Ethnicity By Establishment Metric",
                 "description": "Missing Ethnicity By Establishment Metric",
+                "columns": [
+                      {
+                        "name": "has_ethnicity",
+                        "display": "No. of Prisoners with ethnicity",
+                        "unit": "number",
+                        "aggregate": "sum"
+                      },
+                      {
+                        "name": "ethnicity_is_missing",
+                        "display": "No. of Prisoners without ethnicity",
+                        "unit": "number",
+                        "aggregate": "sum"
+                      }
+                ],
                 "charts": [
                   {
                     "type": "bar",
@@ -46,17 +60,7 @@ class DashboardDefinitionIntegrationTest : IntegrationTestBase() {
                       "name": "establishment_id",
                       "display": "Establishment ID"
                     },
-                    "unit": "number",
-                    "columns": [
-                      {
-                        "name": "has_ethnicity",
-                        "display": "No. of Prisoners with ethnicity"
-                      },
-                      {
-                        "name": "ethnicity_is_missing",
-                        "display": "No. of Prisoners without ethnicity"
-                      }
-                    ]
+                    "columns": ["has_ethnicity","ethnicity_is_missing"]
                   },
                   {
                     "type": "doughnut",
@@ -64,17 +68,7 @@ class DashboardDefinitionIntegrationTest : IntegrationTestBase() {
                       "name": "establishment_id",
                       "display": "Establishment ID"
                     },
-                    "unit": "percentage",
-                    "columns": [
-                      {
-                        "name": "has_ethnicity",
-                        "display": "No. of Prisoners with ethnicity"
-                      },
-                      {
-                        "name": "ethnicity_is_missing",
-                        "display": "No. of Prisoners without ethnicity"
-                      }
-                    ]
+                    "columns": ["has_ethnicity","ethnicity_is_missing"]
                   }
                 ]
               }
